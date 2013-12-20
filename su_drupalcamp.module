@@ -3,3 +3,24 @@
  * @file
  * Code for the Stanford DrupalCamp module.
  */
+
+/**
+ * Implements template_preprocess_html().
+ */
+function su_drupalcamp_preprocess_html(&$variables){
+  global $user;
+  if ((!in_array('administrator', $user->roles)) && (preg_match('/^Create Session/', $variables['head_title']) > 0)) {
+    $title_string = t("Submit Session Proposal | Stanford Drupal Camp");
+    $variables['head_title'] = $title_string;
+  }
+}
+
+/**
+ * Implements template_preprocess_page().
+ */
+function su_drupalcamp_preprocess_page(&$variables){
+  global $user;
+  if ((!in_array('administrator', $user->roles)) && ($variables['page']['content']['system_main']['type']['#value'] == 'session')) {
+    drupal_set_title(t('Submit Session Proposal'));
+  }
+}
