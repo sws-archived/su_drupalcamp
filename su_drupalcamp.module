@@ -24,3 +24,28 @@ function su_drupalcamp_preprocess_page(&$variables){
     drupal_set_title(t('Submit Session Proposal'));
   }
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function su_drupalcamp_form_session_node_form_alter(&$form, &$form_state, $form_id) {
+
+  global $user;
+  $is_admin = user_access('administer site configuration');
+
+  // Hide group ref from non admins.
+  // This field is required by OG and is stored in a feature so we need to do
+  // some fun hacky time stuff. Don't try this at home.
+  if (isset($form['og_group_ref']) && !$is_admin) {
+    // $form['og_group_ref']['#attributes']['class'][] = 'visually-hidden';
+    // $form['#valdiate'][] = "su_drupalcamp_form_session_node_form_alter_validate";
+
+    unset($form['og_group_ref']);
+    foreach ($form['#validate'] as $k => $callback) {
+      if ($callback == "og_form_group_reference_validate") {
+        unset($form['#validate'][$k]);
+      }
+    }
+  }
+
+}
