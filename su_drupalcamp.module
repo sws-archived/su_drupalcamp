@@ -32,14 +32,14 @@ function su_drupalcamp_form_session_node_form_alter(&$form, &$form_state, $form_
 
   global $user;
   $is_admin = user_access('administer site configuration');
+  $is_logged_in = user_is_logged_in();
 
-  // Hide group ref from non admins.
+  // Hide group ref from non logged in types.
   // This field is required by OG and is stored in a feature so we need to do
   // some fun hacky time stuff. Don't try this at home.
-  if (isset($form['og_group_ref']) && !$is_admin) {
+  if (isset($form['og_group_ref'])) {
     // $form['og_group_ref']['#attributes']['class'][] = 'visually-hidden';
     // $form['#valdiate'][] = "su_drupalcamp_form_session_node_form_alter_validate";
-
     unset($form['og_group_ref']);
     foreach ($form['#validate'] as $k => $callback) {
       if ($callback == "og_form_group_reference_validate") {
