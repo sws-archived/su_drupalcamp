@@ -49,3 +49,22 @@ function su_drupalcamp_form_session_node_form_alter(&$form, &$form_state, $form_
   }
 
 }
+
+/**
+ * Implements hook_node_access().
+ */
+function su_drupalcamp_node_access($node, $op, $account) {
+  $type = is_string($node) ? $node : $node->type;
+  $is_logged_in = user_is_logged_in();
+
+   // Ensure that session nodes are not anon created even if OG says its ok.
+   // see: og_node_access for their overrides.
+   if ($type == 'session' && !$is_logged_in) {
+     if ($op == 'create') {
+       return NODE_ACCESS_DENY;
+     }
+   }
+
+  // Returning nothing from this function would have the same effect.
+  return NODE_ACCESS_IGNORE;
+}
