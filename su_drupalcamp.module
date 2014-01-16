@@ -20,8 +20,10 @@ function su_drupalcamp_preprocess_html(&$variables){
  */
 function su_drupalcamp_preprocess_page(&$variables){
   global $user;
-  if ((!in_array('administrator', $user->roles)) && ($variables['page']['content']['system_main']['type']['#value'] == 'session')) {
-    drupal_set_title(t('Submit Session Proposal'));
+  if(isset($variables['page']['content']['system_main']['type'])) {
+    if ((!in_array('administrator', $user->roles)) && ($variables['page']['content']['system_main']['type']['#value'] == 'session')) {
+      drupal_set_title(t('Submit Session Proposal'));
+    }
   }
 }
 
