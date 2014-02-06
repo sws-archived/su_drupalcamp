@@ -42,7 +42,17 @@ function su_drupalcamp_form_session_node_form_alter(&$form, &$form_state, $form_
   if (isset($form['og_group_ref'])) {
     // $form['og_group_ref']['#attributes']['class'][] = 'visually-hidden';
     // $form['#valdiate'][] = "su_drupalcamp_form_session_node_form_alter_validate";
-    unset($form['og_group_ref']);
+//    unset($form['og_group_ref']);
+
+    $form['og_group_ref']['#access'] = user_access('Administer site configuration');
+
+    // Default to the last option in the list.
+    $options = $form['og_group_ref'][LANGUAGE_NONE][0]['default']['#options'];
+    $selected = array_keys($options);
+    $key = array_pop($selected);
+
+    $form['og_group_ref'][LANGUAGE_NONE][0]['default']['#default_value'] = $key;
+
     foreach ($form['#validate'] as $k => $callback) {
       if ($callback == "og_form_group_reference_validate") {
         unset($form['#validate'][$k]);
