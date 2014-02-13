@@ -61,6 +61,20 @@ function su_drupalcamp_form_session_node_form_alter(&$form, &$form_state, $form_
   }
 
 }
+/**
+ * @param $form
+ * @param $form_state
+ */
+function su_drupalcamp_form_user_profile_form_alter(&$form, &$form_state) {
+    global $user;
+    $is_admin = user_access('administer site configuration');
+
+    if ($is_admin) {
+        $form['og_user_node'][LANGUAGE_NONE][0]['#required'] = FALSE;
+        $form['og_group_ref'][LANGUAGE_NONE][0]['#required'] = FALSE;
+        return;
+    }
+}
 
 /**
  * Implements hook_form_alter().
