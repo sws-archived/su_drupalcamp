@@ -42,9 +42,9 @@ function su_drupalcamp_form_session_node_form_alter(&$form, &$form_state, $form_
   if (isset($form['og_group_ref'])) {
     // $form['og_group_ref']['#attributes']['class'][] = 'visually-hidden';
     // $form['#valdiate'][] = "su_drupalcamp_form_session_node_form_alter_validate";
-//    unset($form['og_group_ref']);
+    // unset($form['og_group_ref']);
 
-    $form['og_group_ref']['#access'] = user_access('Administer site configuration');
+    $form['og_group_ref']['#access'] = user_access('administer site configuration');
 
     // Default to the last option in the list.
     $options = $form['og_group_ref'][LANGUAGE_NONE][0]['default']['#options'];
@@ -61,6 +61,47 @@ function su_drupalcamp_form_session_node_form_alter(&$form, &$form_state, $form_
   }
 
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function su_drupalcamp_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id == 'user_register_form') {
+
+    if (!isset($form['og_user_node']) && !isset($form['og_group_ref'])) {
+      return;
+    }
+
+    // Bypass the list that is not listing events. Eff it I tried the config.
+    $events = db_select('node', 'n')
+      ->fields('n', array('nid', 'title'))
+      ->condition('type', 'event')
+      ->condition('status', 1)
+      ->orderBy('nid', ASC)
+      ->execute();
+
+    $nids = $events->fetchAllAssoc('nid');
+    $default = array_pop(array_keys($nids));
+
+    $options = array();
+
+    foreach ($nids as $nid => $vals) {
+      $options[$nid] = t($vals->title);
+    }
+
+    $form['og_user_node']['#access'] = user_access('administer site configuration');
+    $form['og_group_ref']['#access'] = user_access('administer site configuration');
+
+    $form['og_user_node'][LANGUAGE_NONE][0]['default']['#options'] = $options;
+    $form['og_group_ref'][LANGUAGE_NONE][0]['default']['#options'] = $options;
+
+    $form['og_user_node'][LANGUAGE_NONE][0]['default']['#default_value'] = $default;
+    $form['og_group_ref'][LANGUAGE_NONE][0]['default']['#default_value'] = $default;
+  }
+
+}
+
 
 /**
  * Implements hook_node_access().
