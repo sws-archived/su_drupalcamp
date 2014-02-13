@@ -70,7 +70,6 @@ function su_drupalcamp_form_user_profile_form_alter(&$form, &$form_state) {
     $is_admin = user_access('administer site configuration');
 
     if ($is_admin) {
-        $form['og_user_node'][LANGUAGE_NONE][0]['#required'] = FALSE;
         $form['og_group_ref'][LANGUAGE_NONE][0]['#required'] = FALSE;
         return;
     }
@@ -83,7 +82,7 @@ function su_drupalcamp_form_alter(&$form, &$form_state, $form_id) {
 
   if ($form_id == 'user_register_form') {
 
-    if (!isset($form['og_user_node']) && !isset($form['og_group_ref'])) {
+    if (!isset($form['og_group_ref'])) {
       return;
     }
 
@@ -104,14 +103,10 @@ function su_drupalcamp_form_alter(&$form, &$form_state, $form_id) {
       $options[$nid] = t($vals->title);
     }
 
-    $form['og_user_node']['#access'] = user_access('administer site configuration');
     $form['og_group_ref']['#access'] = user_access('administer site configuration');
-
-    $form['og_user_node'][LANGUAGE_NONE][0]['default']['#options'] = $options;
     $form['og_group_ref'][LANGUAGE_NONE][0]['default']['#options'] = $options;
-
-    $form['og_user_node'][LANGUAGE_NONE][0]['default']['#default_value'] = $default;
     $form['og_group_ref'][LANGUAGE_NONE][0]['default']['#default_value'] = $default;
+
   }
 
 }
